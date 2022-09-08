@@ -45,10 +45,9 @@ get_latest_version() {
 }
 
 download_release() {
-  local version filename url down_pth
+  local version filename url
   version="$1"
   filename="$2"
-  down_pth="$3"
 
   if [ "$version" = "latest" ]; then
     version=$(get_latest_version)
@@ -57,7 +56,7 @@ download_release() {
   url="$GH_REPO/releases/download/${version}/${filename}"
 
   echo "* Downloading $TOOL_NAME release $version..."
-  curl "${curl_opts[@]}" -o "$down_pth" -C - "$url" || fail "Could not download $url"
+  curl "${curl_opts[@]}" -o "$release_file" -C - "$url" || fail "Could not download $url"
 }
 
 get_arch() {
@@ -96,14 +95,13 @@ install_version() {
   arch="$(get_arch)"
   platform="$(get_platform)"
   local release_file="difft-$arch-$platform.tar.gz"
-  local download_pth="$ASDF_DOWNLOAD_PATH/$release_file"
 
   (
     mkdir -p "$install_path"
     # cp -r "$ASDF_DOWNLOAD_PATH"/* "$install_path"
-    download_release "$version" "$release_file" "$download_pth"
-    tar -xzf "$download_pth" -C "$install_path" || fail Could not extract "$download_pth"
-    rm "$download_pth"
+    download_release "$version" "$release_file"
+    tar -xzf "$release_file" -C "$install_path" || fail Could not extract "$release_file"
+    rm "$release_file"
 
     local tool_cmd
     tool_cmd="$(echo "$TOOL_TEST" | cut -d' ' -f1)"
