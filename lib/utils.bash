@@ -13,9 +13,10 @@ fail() {
 
 curl_opts=(-fsSL)
 
-# if [ -n "${GITHUB_API_TOKEN:-}" ]; then
-#   curl_opts=("${curl_opts[@]}" -H "Authorization: token $GITHUB_API_TOKEN")
-# fi
+# Will be active only in CI
+if [ -n "${GITHUB_API_TOKEN:-}" ]; then
+  curl_opts=("${curl_opts[@]}" -H "Authorization: token $GITHUB_API_TOKEN")
+fi
 
 sort_versions() {
   sed 'h; s/[+-]/./g; s/.p\([[:digit:]]\)/.z\1/; s/$/.z/; G; s/\n/ /' |
@@ -36,7 +37,7 @@ get_latest_version() {
   local latest_version
   echo "Checking latest version for difftastic..." >&2
 
-  latest_version=$(curl -L --silent "https://api.github.com/repos/Wilfred/difftastic/releases/latest" |
+  latest_version=$(curl -L --silent "${curl_opts[@]}" "https://api.github.com/repos/Wilfred/difftastic/releases/latest" |
     grep '"tag_name":' |
     sed -E 's/.*"([^"]+)".*/\1/')
   echo "Latest version for difftastic is $latest_version" >&2
