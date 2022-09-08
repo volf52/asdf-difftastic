@@ -2,7 +2,6 @@
 
 # asdf-difftastic [![Build](https://github.com/volf52/asdf-difftastic/actions/workflows/build.yml/badge.svg)](https://github.com/volf52/asdf-difftastic/actions/workflows/build.yml) [![Lint](https://github.com/volf52/asdf-difftastic/actions/workflows/lint.yml/badge.svg)](https://github.com/volf52/asdf-difftastic/actions/workflows/lint.yml)
 
-
 [difftastic](https://github.com/volf52/difftastic) plugin for the [asdf version manager](https://asdf-vm.com).
 
 </div>
@@ -16,10 +15,7 @@
 
 # Dependencies
 
-**TODO: adapt this section**
-
-- `bash`, `curl`, `tar`: generic POSIX utilities.
-- `SOME_ENV_VAR`: set this environment variable in your shell config to load the correct version of tool x.
+- `bash`, `curl`, `tar`: generic POSIX utilities
 
 # Install
 
