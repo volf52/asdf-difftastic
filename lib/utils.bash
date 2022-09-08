@@ -2,8 +2,7 @@
 
 set -euo pipefail
 
-# TODO: Ensure this is the correct GitHub homepage where releases can be downloaded for difftastic.
-GH_REPO="https://github.com/volf52/difftastic"
+GH_REPO="https://github.com/Wilfred/difftastic"
 TOOL_NAME="difftastic"
 TOOL_TEST="difft --version"
 
@@ -14,10 +13,9 @@ fail() {
 
 curl_opts=(-fsSL)
 
-# NOTE: You might want to remove this if difftastic is not hosted on GitHub releases.
-if [ -n "${GITHUB_API_TOKEN:-}" ]; then
-  curl_opts=("${curl_opts[@]}" -H "Authorization: token $GITHUB_API_TOKEN")
-fi
+# if [ -n "${GITHUB_API_TOKEN:-}" ]; then
+#   curl_opts=("${curl_opts[@]}" -H "Authorization: token $GITHUB_API_TOKEN")
+# fi
 
 sort_versions() {
   sed 'h; s/[+-]/./g; s/.p\([[:digit:]]\)/.z\1/; s/$/.z/; G; s/\n/ /' |
@@ -27,12 +25,10 @@ sort_versions() {
 list_github_tags() {
   git ls-remote --tags --refs "$GH_REPO" |
     grep -o 'refs/tags/.*' | cut -d/ -f3- |
-    sed 's/^v//' # NOTE: You might want to adapt this sed to remove non-version strings from tags
+    sed 's/^v//'
 }
 
 list_all_versions() {
-  # TODO: Adapt this. By default we simply list the tag names from GitHub releases.
-  # Change this function if difftastic has other means of determining installable versions.
   list_github_tags
 }
 
@@ -41,11 +37,34 @@ download_release() {
   version="$1"
   filename="$2"
 
-  # TODO: Adapt the release URL convention for difftastic
-  url="$GH_REPO/archive/v${version}.tar.gz"
+  url="$GH_REPO/releases/download/${version}/${filename}"
 
   echo "* Downloading $TOOL_NAME release $version..."
   curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
+}
+
+get_arch() {
+  arch=$(uname -m | tr '[:upper:]' '[:lower:]')
+
+  echo "$arch"
+}
+
+get_platform() {
+  plat=$(uname | tr '[:upper:]' '[:lower:]')
+
+  case $plat in
+  darwin)
+    plat='apple-darwin'
+    ;;
+  linux)
+    plat='unknown-linux-gnu'
+    ;;
+  windows)
+    plat='pc-windows-msvc'
+    ;;
+  esac
+
+  echo "$plat"
 }
 
 install_version() {
@@ -57,11 +76,18 @@ install_version() {
     fail "asdf-$TOOL_NAME supports release installs only"
   fi
 
+  arch="$(get_arch)"
+  platform="$(get_platform)"
+  local release_file="difftastic-$arch-$platform.tar.gz"
+  local download_pth="$ASDF_DOWNLOAD_PATH/$release_file"
+
   (
     mkdir -p "$install_path"
-    cp -r "$ASDF_DOWNLOAD_PATH"/* "$install_path"
+    # cp -r "$ASDF_DOWNLOAD_PATH"/* "$install_path"
+    download_release "$version" "$download_pth"
+    tar -xzf "$download_pth" -C "$install_path" --strip-components=1 || fail Could not extract "$download_pth"
+    rm "$download_pth"
 
-    # TODO: Assert difftastic executable exists.
     local tool_cmd
     tool_cmd="$(echo "$TOOL_TEST" | cut -d' ' -f1)"
     test -x "$install_path/$tool_cmd" || fail "Expected $install_path/$tool_cmd to be executable."
