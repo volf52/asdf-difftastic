@@ -36,7 +36,7 @@ get_latest_version() {
   local latest_version
   echo "Checking latest version for difftastic..." >&2
 
-  latest_version=$(curl --silent "https://api.github.com/repos/Wilfred/difftastic/releases/latest" |
+  latest_version=$(curl -L --silent "https://api.github.com/repos/Wilfred/difftastic/releases/latest" |
     grep '"tag_name":' |
     sed -E 's/.*"([^"]+)".*/\1/')
   echo "Latest version for difftastic is $latest_version" >&2
