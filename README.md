@@ -2,7 +2,7 @@
 
 # asdf-difftastic [![Build](https://github.com/volf52/asdf-difftastic/actions/workflows/build.yml/badge.svg)](https://github.com/volf52/asdf-difftastic/actions/workflows/build.yml) [![Lint](https://github.com/volf52/asdf-difftastic/actions/workflows/lint.yml/badge.svg)](https://github.com/volf52/asdf-difftastic/actions/workflows/lint.yml)
 
-[difftastic](https://github.com/volf52/difftastic) plugin for the [asdf version manager](https://asdf-vm.com).
+[difftastic](https://github.com/Wilfred/difftastic) plugin for the [asdf version manager](https://asdf-vm.com).
 
 </div>
 
